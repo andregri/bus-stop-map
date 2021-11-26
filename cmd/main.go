@@ -1,8 +1,10 @@
 package main
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
+	"time"
 	_ "github.com/lib/pq"
 	"github.com/andregri/bus-stop-map/internal/postgres"
 	"github.com/andregri/bus-stop-map/internal/record"
@@ -25,8 +27,10 @@ func main() {
 
 	fmt.Println("connected")
 
-	atdb := &postgres.ArrivalTimeDb{Db: db, TableName: "arrival_time"}
+	atdb := &postgres.ArrivalTimeDb{Sql: db, TableName: "arrival_time"}
 
 	atdb.MakeArrivalTimeTable()
-	atdb.CreateRecord(nil, record.ArrivalTimeRecord{StopCode: "asdf", BusLine: "sdf", ArrivalTime: "asdf"})
+	atdb.CreateRecord(
+		context.Background(),
+		record.ArrivalTimeRecord{StopCode: "B222", BusLine: "11", ArrivalTime: time.Now()})
 }

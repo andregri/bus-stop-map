@@ -33,4 +33,6 @@ func main() {
 	atdb.CreateRecord(
 		context.Background(),
 		record.ArrivalTimeRecord{StopCode: "B222", BusLine: "11", ArrivalTime: time.Now()})
+
+	atdb.DeleteRecord(context.Background(), 1)
 }

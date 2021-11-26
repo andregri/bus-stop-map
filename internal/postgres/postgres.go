@@ -37,7 +37,7 @@ func (db *ArrivalTimeDb) MakeArrivalTimeTable() {
 	}
 }
 
-func (db *ArrivalTimeDb) CreateRecord(ctx context.Context, record record.ArrivalTimeRecord) {
+func (db *ArrivalTimeDb) CreateRecord(ctx context.Context, record record.ArrivalTimeRecord) error {
 	// Insert data
 	insertStmt := `insert into "arrival_time"("stop_code", "bus_line",
 		"arrival_time") values($1, $2, $3)`
@@ -45,8 +45,16 @@ func (db *ArrivalTimeDb) CreateRecord(ctx context.Context, record record.Arrival
 	if err != nil {
 		panic(err)
 	}
+
+	return nil
 }
 
 func (db *ArrivalTimeDb) DeleteRecord(ctx context.Context, id int) error {
-	panic("Not implemented")
+	deleteStmt := `delete from arrival_time where id = $1`
+	_, err := db.Sql.Exec(deleteStmt, id)
+	if err != nil {
+		panic(err)
+	}
+
+	return nil
 }

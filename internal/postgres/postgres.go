@@ -3,20 +3,13 @@ package postgres
 import (
 	"context"
 	"database/sql"
-	_ "github.com/lib/pq"
-	"github.com/andregri/bus-stop-map/internal/record"
-)
 
-const (
-	Host = "localhost"
-	Port = 5432
-	User = "postgres"
-	Password = "123"
-	Dbname = "postgres"
+	"github.com/andregri/bus-stop-map/internal/record"
+	_ "github.com/lib/pq"
 )
 
 type ArrivalTimeDb struct {
-	Sql *sql.DB
+	Sql       *sql.DB
 	TableName string
 }
 
@@ -47,6 +40,29 @@ func (db *ArrivalTimeDb) CreateRecord(ctx context.Context, record record.Arrival
 	}
 
 	return nil
+}
+
+func (db *ArrivalTimeDb) SearchRecord(ctx context.Context, id int) ([]record.ArrivalTimeRecord, error) {
+	searchStmt := `select * from arrival_time where id = $1`
+	rows, err := db.Sql.Query(searchStmt, id)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	records := []record.ArrivalTimeRecord{}
+
+	for rows.Next() {
+		var _id int
+		var rec record.ArrivalTimeRecord
+		if err := rows.Scan(&_id, &rec.StopCode, &rec.BusLine, &rec.ArrivalTime); err != nil {
+			return nil, err
+		}
+		records = append(records, rec)
+	}
+
+	return records, nil
 }
 
 func (db *ArrivalTimeDb) DeleteRecord(ctx context.Context, id int) error {

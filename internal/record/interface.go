@@ -13,5 +13,6 @@ type ArrivalTimeRecord struct {
 
 type ArrivalTimeHandler interface {
 	CreateRecord(ctx context.Context, record ArrivalTimeRecord) error
+	SearchRecord(ctx context.Context, id int) ([]ArrivalTimeRecord, error)
 	DeleteRecord(ctx context.Context, id int) error
 }

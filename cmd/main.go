@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/andregri/bus-stop-map/internal/api"
 	"github.com/andregri/bus-stop-map/internal/postgres"
 	"github.com/andregri/bus-stop-map/internal/record"
 	_ "github.com/lib/pq"
@@ -73,6 +74,11 @@ func main() {
 	// Handle `/` route
 	http.HandleFunc("/", func(res http.ResponseWriter, req *http.Request) {
 		fmt.Fprint(res, "Hello World!")
+	})
+
+	// Handle `/search/` route
+	http.HandleFunc("/search/", func(rw http.ResponseWriter, r *http.Request) {
+		api.SearchHandler(context.Background(), atdb, rw, r)
 	})
 
 	// Start https server

@@ -13,15 +13,15 @@ import (
 func SearchHandler(ctx context.Context, dbHandler record.ArrivalTimeHandler,
 	w http.ResponseWriter, r *http.Request) {
 
-	//stopCode := r.URL.Path[len("/search/"):]
+	stopCode := r.URL.Path[len("/search/"):]
 
-	records, err := dbHandler.SearchRecord(ctx, 3)
+	records, err := dbHandler.SearchRecord(ctx, stopCode)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	for _, r := range records {
-		fmt.Fprintf(w, "<div>%s</div><div>%s</div><div>%s</div>",
+		fmt.Fprintf(w, "<div>%s - %s - %s</div>",
 			r.StopCode, r.BusLine, r.ArrivalTime)
 	}
 

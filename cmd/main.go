@@ -51,13 +51,13 @@ func main() {
 		record.ArrivalTimeRecord{StopCode: "B222", BusLine: "11", ArrivalTime: time.Now()},
 	)
 
-	records, err := atdb.SearchRecord(context.Background(), 3)
+	records, err := atdb.SearchRecord(context.Background(), "B222")
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(records[0].BusLine, records[0].StopCode, records[0].ArrivalTime)
+	fmt.Println("Search result", records[0].BusLine, records[0].StopCode, records[0].ArrivalTime)
 
-	atdb.DeleteRecord(context.Background(), 1)
+	//atdb.DeleteRecord(context.Background(), 1)
 
 	// Load certificate
 	cert, _ := tls.LoadX509KeyPair("localhost.crt", "localhost.key")

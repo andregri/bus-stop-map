@@ -42,9 +42,9 @@ func (db *ArrivalTimeDb) CreateRecord(ctx context.Context, record record.Arrival
 	return nil
 }
 
-func (db *ArrivalTimeDb) SearchRecord(ctx context.Context, id int) ([]record.ArrivalTimeRecord, error) {
-	searchStmt := `select * from arrival_time where id = $1`
-	rows, err := db.Sql.Query(searchStmt, id)
+func (db *ArrivalTimeDb) SearchRecord(ctx context.Context, stopCode string) ([]record.ArrivalTimeRecord, error) {
+	searchStmt := `select * from arrival_time where stop_code = $1`
+	rows, err := db.Sql.Query(searchStmt, stopCode)
 	if err != nil {
 		return nil, err
 	}

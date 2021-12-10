@@ -1,8 +1,7 @@
 module github.com/andregri/bus-stop-map
 
-go 1.16
+go 1.17
 
-require (
-	github.com/go-redis/redis/v8 v8.11.4
-	github.com/gomodule/redigo v1.8.5
-)
+replace github.com/andregri/bus-stop-map/ => ./
+
+require github.com/lib/pq v1.10.4

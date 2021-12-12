@@ -83,6 +83,10 @@ func main() {
 		api.SearchHandler(context.Background(), atdb, rw, r)
 	})
 
+	http.HandleFunc("/add/", func(rw http.ResponseWriter, r *http.Request) {
+		api.AddHandler(context.Background(), atdb, rw, r)
+	})
+
 	// Start https server
 	panic(s.ListenAndServeTLS("", ""))
 }

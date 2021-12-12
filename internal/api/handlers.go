@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
+	"time"
 
 	"github.com/andregri/bus-stop-map/internal/record"
 )
@@ -25,4 +27,25 @@ func SearchHandler(ctx context.Context, dbHandler record.ArrivalTimeHandler,
 			r.StopCode, r.BusLine, r.ArrivalTime)
 	}
 
+}
+
+// Handler for `/add/<stop code>/<bus line>`
+func AddHandler(ctx context.Context, dbHandler record.ArrivalTimeHandler,
+	w http.ResponseWriter, r *http.Request) {
+
+	args := strings.Split(r.URL.Path[len("/add/"):], "/")
+
+	stopCode := args[0]
+	busLine := args[1]
+
+	record := record.ArrivalTimeRecord{
+		StopCode:    stopCode,
+		BusLine:     busLine,
+		ArrivalTime: time.Now(),
+	}
+
+	err := dbHandler.CreateRecord(ctx, record)
+	if err != nil {
+		log.Println(err)
+	}
 }

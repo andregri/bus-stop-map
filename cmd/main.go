@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/andregri/bus-stop-map/internal/api"
@@ -16,14 +17,15 @@ import (
 )
 
 const (
-	Host     = "localhost"
-	Port     = 5432
-	User     = "postgres"
-	Password = "123"
-	Dbname   = "postgres"
+	Port = 5432
 )
 
 func main() {
+	Host := os.Getenv("POSTGRES_HOST")
+	User := os.Getenv("POSTGRES_USER")
+	Password := os.Getenv("POSTGRES_PASSWORD")
+	Dbname := os.Getenv("POSTGRES_DB")
+
 	// Connect to sql server
 	psqlconn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s sslmode=disable",
 		Host, User, Password, Dbname)

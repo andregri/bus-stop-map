@@ -54,3 +54,9 @@ Delete a row:
 ```
 curl -X DELETE http://localhost:9000/v1/arrival/1
 ```
+
+Update a row:
+```
+curl -X PATCH http://localhost:9000/v1/arrival/2 \-H 'content-type: application/json' \
+-d '{"time":"22:15"}'
+```

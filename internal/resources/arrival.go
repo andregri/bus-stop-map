@@ -96,5 +96,33 @@ func DeleteArrival(c *gin.Context) {
 }
 
 func UpdateArrival(c *gin.Context) {
-	panic("Not implemented")
+	// Get id
+	id := c.Param("id")
+
+	// Get field to update from json
+	type ArrivalTime struct {
+		Time string `json:"time"`
+	}
+	var arrivalTime ArrivalTime
+	err := c.BindJSON(&arrivalTime)
+	if err != nil {
+		log.Println("Error in json decode: ", err)
+		c.String(http.StatusInternalServerError, err.Error())
+	} else {
+		stmt, err := dbutils.DB.Prepare(`
+			UPDATE arrival SET time=$1 WHERE id=$2
+		`)
+		if err != nil {
+			log.Println("Error in stmt prepare: ", err)
+			c.String(http.StatusInternalServerError, err.Error())
+		} else {
+			_, err = stmt.Exec(arrivalTime.Time, id)
+			if err != nil {
+				log.Println("Error in exec update: ", err)
+				c.String(http.StatusInternalServerError, err.Error())
+			} else {
+				c.Status(http.StatusOK)
+			}
+		}
+	}
 }

@@ -1,0 +1,27 @@
+name: Build go app
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '**.md'
+  pull_request:
+    paths-ignore:
+      - '**.md'
+
+jobs:
+  build:
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-go@v2
+      - run: go build cmd/main.go
+
+  test:
+    needs: build
+    steps:
+      - run: echo "Test not implemented"
+
+  deploy:
+    needs: test
+    steps:
+      - run: echo "Deploy not implemented"

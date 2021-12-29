@@ -75,7 +75,24 @@ func CreateArrival(c *gin.Context) {
 }
 
 func DeleteArrival(c *gin.Context) {
-	panic("Not Implemented")
+	id := c.Param("id")
+
+	stmt, err := dbutils.DB.Prepare(`
+		DELETE FROM arrival WHERE id=$1
+	`)
+	if err != nil {
+		log.Println("Error in select statement: ", err)
+		c.String(http.StatusInternalServerError, err.Error())
+	} else {
+		// Delete row from db
+		_, err = stmt.Exec(id)
+		if err != nil {
+			log.Println("Error in exec statement: ", err)
+			c.String(http.StatusInternalServerError, err.Error())
+		} else {
+			c.Status(http.StatusOK)
+		}
+	}
 }
 
 func UpdateArrival(c *gin.Context) {

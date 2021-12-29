@@ -49,3 +49,8 @@ Get a row
 ```
 curl -X GET http://localhost:9000/v1/arrival/1
 ```
+
+Delete a row:
+```
+curl -X DELETE http://localhost:9000/v1/arrival/1
+```

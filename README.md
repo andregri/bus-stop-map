@@ -20,7 +20,7 @@
 | `/v1/arrival`  | POST | Create a new arrival time recording.Fields are required in JSON body. Return the id of the created resource in JSON. |
 | `/v1/arrival/id` | GET | Read an arrival time by id. Return all the fields in JSON. |
 | `/v1/arrival/id` | DELETE | Delete an arrival time by id |
-| `/v1/arrival/id` | PATCH | Update the arrival time record. The field to be updated is required in JSON. |
+| `/v1/arrival/id` | PATCH | Update the arrival time record. The time field to be updated is required in JSON. |
 
 ## For developers
 To run the server locally:

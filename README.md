@@ -1,5 +1,9 @@
 # bus-stop-map
 
+<p align="left">
+  <a href="https://github.com/andregri/bus-stop-map/actions"><img alt="GitHub Actions status" src="https://github.com/andregri/bus-stop-map/workflows/Build%20go%20app/badge.svg"></a>
+</p>
+
 ## API v1
 
 ### Arrival resource

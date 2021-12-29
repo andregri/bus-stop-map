@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 
 	"github.com/andregri/bus-stop-map/internal/dbutils"
@@ -47,13 +48,18 @@ func main() {
 	//
 	router := gin.Default()
 
+	router.GET("/version", func(c *gin.Context) {
+		c.String(http.StatusOK, "API v1")
+	})
+
 	// Simple group: v1
-	arrivalRouter := router.Group("/v1/arrival")
+	v1 := router.Group("/v1/")
 	{
-		arrivalRouter.GET(":id", resources.GetArrival)
-		arrivalRouter.POST("", resources.CreateArrival)
-		arrivalRouter.DELETE(":id", resources.DeleteArrival)
-		arrivalRouter.PATCH(":id", resources.UpdateArrival)
+
+		v1.GET("/arrival/:id", resources.GetArrival)
+		v1.POST("/arrival", resources.CreateArrival)
+		v1.DELETE("/arrival/:id", resources.DeleteArrival)
+		v1.PATCH("/arrival/:id", resources.UpdateArrival)
 	}
 
 	router.Run(":9000")

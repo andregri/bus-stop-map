@@ -19,7 +19,9 @@
 | `/v1/arrival/id` | PATCH | Update the arrival time record. The field to be updated is required in JSON. |
 
 ## For developers
-To run redis docker container
+To run the server locally:
 ```
-sudo docker run --name redis -d -p 6379:6379 redis
+docker run --name some-postgres --rm -p 5432:5432 -e POSTGRES_USER=andrea -e POSTGRES_PASSWORD=very_strong_password -e POSTGRES_DB=app_database -d postgres
+
+POSTGRES_HOST=127.0.0.1 POSTGRES_USER=andrea POSTGRES_PASSWORD=very_strong_password POSTGRES_DB=app_database go run cmd/main.go
 ```

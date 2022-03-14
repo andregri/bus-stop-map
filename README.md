@@ -64,3 +64,9 @@ Update a row:
 curl -X PATCH http://localhost:9000/v1/arrival/2 \-H 'content-type: application/json' \
 -d '{"time":"22:15"}'
 ```
+
+## Build
+```
+cd cmd
+GOOS=linux GOARCH=amd64 go build -o bus-server
+```

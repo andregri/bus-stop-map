@@ -60,6 +60,11 @@ func main() {
 		v1.POST("/arrival", resources.CreateArrival)
 		v1.DELETE("/arrival/:id", resources.DeleteArrival)
 		v1.PATCH("/arrival/:id", resources.UpdateArrival)
+		v1.OPTIONS("/arrival", func(c *gin.Context) {
+			c.Header("Access-Control-Allow-Origin", "*")
+			c.Header("Access-Control-Allow-Methods", "GET, OPTIONS, POST, PUT")
+			c.Header("Access-Control-Allow-Headers", "accept, content-type")
+		})
 	}
 
 	router.Run(":9000")

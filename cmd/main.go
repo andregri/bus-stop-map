@@ -1,18 +1,15 @@
 package main
 
 import (
-	"context"
-	"crypto/tls"
 	"database/sql"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
-	"time"
 
-	"github.com/andregri/bus-stop-map/internal/api"
-	"github.com/andregri/bus-stop-map/internal/postgres"
-	"github.com/andregri/bus-stop-map/internal/record"
+	"github.com/andregri/bus-stop-map/internal/dbutils"
+	"github.com/andregri/bus-stop-map/internal/resources"
+	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
 )
 
@@ -33,6 +30,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	dbutils.DB = db
 
 	defer db.Close()
 
@@ -42,51 +40,27 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Println("connected")
+	log.Println("Connected to db")
 
-	// Create new table
-	atdb := &postgres.ArrivalTimeDb{Sql: db, TableName: "arrival_time"}
-	atdb.MakeArrivalTimeTable()
+	// Initialize tables
+	dbutils.InitTables()
 
-	atdb.CreateRecord(
-		context.Background(),
-		record.ArrivalTimeRecord{StopCode: "B222", BusLine: "11", ArrivalTime: time.Now()},
-	)
+	//
+	router := gin.Default()
 
-	records, err := atdb.SearchRecord(context.Background(), "B222")
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println("Search result", records[0].BusLine, records[0].StopCode, records[0].ArrivalTime)
+	router.GET("/version", func(c *gin.Context) {
+		c.String(http.StatusOK, "API v1")
+	})
 
-	//atdb.DeleteRecord(context.Background(), 1)
+	// Simple group: v1
+	v1 := router.Group("/v1/")
+	{
 
-	// Load certificate
-	cert, _ := tls.LoadX509KeyPair("localhost.crt", "localhost.key")
-
-	// Create a server with TLS
-	s := &http.Server{
-		Addr:    ":9000",
-		Handler: nil,
-		TLSConfig: &tls.Config{
-			Certificates: []tls.Certificate{cert},
-		},
+		v1.GET("/arrival/:id", resources.GetArrival)
+		v1.POST("/arrival", resources.CreateArrival)
+		v1.DELETE("/arrival/:id", resources.DeleteArrival)
+		v1.PATCH("/arrival/:id", resources.UpdateArrival)
 	}
 
-	// Handle `/` route
-	http.HandleFunc("/", func(res http.ResponseWriter, req *http.Request) {
-		fmt.Fprint(res, "Hello World!")
-	})
-
-	// Handle `/search/` route
-	http.HandleFunc("/search/", func(rw http.ResponseWriter, r *http.Request) {
-		api.SearchHandler(context.Background(), atdb, rw, r)
-	})
-
-	http.HandleFunc("/add/", func(rw http.ResponseWriter, r *http.Request) {
-		api.AddHandler(context.Background(), atdb, rw, r)
-	})
-
-	// Start https server
-	panic(s.ListenAndServeTLS("", ""))
+	router.Run(":9000")
 }

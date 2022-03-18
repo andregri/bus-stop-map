@@ -22,7 +22,7 @@
   <form>
     <label for="get_by_stop_code">Stop code:</label><br>
     <input type="text" id="get_by_stop_code" name="stop_code"><br><br>
-    <button onclick="get()">Add</button>
+    <button onclick="get()">Get</button>
   </form>
 
   <table>
@@ -62,8 +62,8 @@
     }
 
     function get() {
-      //const url = "http://ec2-54-216-109-19.eu-west-1.compute.amazonaws.com:9000/v1/arrivals/" + document.getElementById("get_by_stop_code").value;
-      const url = "http://localhost:9000/v1/arrivals/SP"
+      const url = "http://ec2-54-216-109-19.eu-west-1.compute.amazonaws.com:9000/v1/arrivals/" + document.getElementById("get_by_stop_code").value;
+      //const url = "http://localhost:9000/v1/arrivals/SP"
       fetch(url)
         .then(response => response.json())
         .then(data => {

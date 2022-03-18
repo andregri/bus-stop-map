@@ -9,6 +9,7 @@ import (
 
 	"github.com/andregri/bus-stop-map/internal/dbutils"
 	"github.com/andregri/bus-stop-map/internal/resources"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
 )
@@ -48,6 +49,10 @@ func main() {
 	//
 	router := gin.Default()
 
+	config := cors.DefaultConfig()
+	config.AllowOrigins = []string{"http://bus.andregri.com.s3-website-eu-west-1.amazonaws.com"}
+	router.Use(cors.New(config))
+
 	router.GET("/version", func(c *gin.Context) {
 		c.String(http.StatusOK, "API v1")
 	})
@@ -60,11 +65,6 @@ func main() {
 		v1.POST("/arrival", resources.CreateArrival)
 		v1.DELETE("/arrival/:id", resources.DeleteArrival)
 		v1.PATCH("/arrival/:id", resources.UpdateArrival)
-		v1.OPTIONS("/arrival", func(c *gin.Context) {
-			c.Header("Access-Control-Allow-Origin", "*")
-			c.Header("Access-Control-Allow-Methods", "GET, OPTIONS, POST, PUT")
-			c.Header("Access-Control-Allow-Headers", "accept, content-type")
-		})
 	}
 
 	router.Run(":9000")

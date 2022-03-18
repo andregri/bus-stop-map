@@ -50,7 +50,11 @@ func main() {
 	router := gin.Default()
 
 	config := cors.DefaultConfig()
-	config.AllowOrigins = []string{"http://bus.andregri.com.s3-website-eu-west-1.amazonaws.com"}
+	config.AllowOrigins = []string{
+		"http://bus.andregri.com",
+		"http://bus.andregri.com.s3-website-eu-west-1.amazonaws.com",
+	}
+
 	router.Use(cors.New(config))
 
 	router.GET("/version", func(c *gin.Context) {

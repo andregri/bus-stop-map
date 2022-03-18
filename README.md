@@ -21,6 +21,7 @@
 | `/v1/arrival/id` | GET | Read an arrival time by id. Return all the fields in JSON. |
 | `/v1/arrival/id` | DELETE | Delete an arrival time by id |
 | `/v1/arrival/id` | PATCH | Update the arrival time record. The time field to be updated is required in JSON. |
+| `/v1/arrivals/<stop code>` | GET | Get all items whose stop_code contains "<stop_code>" |
 
 ## For developers
 To run the server locally:
@@ -63,4 +64,15 @@ Update a row:
 ```
 curl -X PATCH http://localhost:9000/v1/arrival/2 \-H 'content-type: application/json' \
 -d '{"time":"22:15"}'
+```
+
+Get rows by stop code:
+```
+curl -X GET http://localhost:9000/v1/arrivals/SP \-H 'content-type: application/json'
+```
+
+## Build
+```
+cd cmd
+GOOS=linux GOARCH=amd64 go build -o bus-server
 ```

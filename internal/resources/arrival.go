@@ -42,6 +42,44 @@ func GetArrival(c *gin.Context) {
 	}
 }
 
+func GetArrivalByStopCode(c *gin.Context) {
+	stop_code := c.Param("stop_code")
+
+	stmt, err := dbutils.DB.Prepare(`
+		SELECT id, stop_code, bus_line, time
+		FROM arrival
+		WHERE stop_code LIKE '%' || $1 || '%'
+	`)
+	if err != nil {
+		log.Println("Error in select statement: ", err)
+		c.String(http.StatusInternalServerError, err.Error())
+	} else {
+		rows, err := stmt.Query(stop_code)
+		if err != nil {
+			log.Println("Error in query: ", err)
+			c.String(http.StatusInternalServerError, err.Error())
+			return
+		}
+		defer rows.Close()
+
+		var arrivals []Arrival
+		var t time.Time
+		for rows.Next() {
+			var arrival Arrival
+			rows.Scan(&arrival.ID, &arrival.StopCode, &arrival.BusLine, &t)
+			arrival.Time = t.String()
+			arrivals = append(arrivals, arrival)
+		}
+		if err = rows.Err(); err != nil {
+			log.Println("Error in rows.Next(): ", err)
+			c.String(http.StatusInternalServerError, err.Error())
+		} else {
+			c.Header("Access-Control-Allow-Origin", "*")
+			c.JSON(http.StatusOK, arrivals)
+		}
+	}
+}
+
 func CreateArrival(c *gin.Context) {
 	// Decode JSON request body
 	decoder := json.NewDecoder(c.Request.Body)

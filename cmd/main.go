@@ -65,6 +65,7 @@ func main() {
 		v1.POST("/arrival", resources.CreateArrival)
 		v1.DELETE("/arrival/:id", resources.DeleteArrival)
 		v1.PATCH("/arrival/:id", resources.UpdateArrival)
+		v1.GET("/arrivals/:stop_code", resources.GetArrivalByStopCode)
 	}
 
 	router.Run(":9000")

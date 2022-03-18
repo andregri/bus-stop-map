@@ -1,41 +1,88 @@
 <!DOCTYPE html>
 <html>
+
 <body>
 
-<h2>Add a record</h2>
+  <h2>Add a record</h2>
 
-<form>
-  <label for="stop_code">Stop code:</label><br>
-  <input type="text" id="stop_code" name="stop_code"><br>
-  <label for="bus_line">Bus line:</label><br>
-  <input type="text" id="bus_line" name="bus_line"><br>
-  <label for="time">Time:</label><br>
-  <input type="time" id="time" name="time"><br><br>
-  <button onclick="post()">Add</button>
-</form>
+  <form>
+    <label for="stop_code">Stop code:</label><br>
+    <input type="text" id="stop_code" name="stop_code"><br>
+    <label for="bus_line">Bus line:</label><br>
+    <input type="text" id="bus_line" name="bus_line"><br>
+    <label for="time">Time:</label><br>
+    <input type="time" id="time" name="time"><br><br>
+    <button onclick="post()">Add</button>
+  </form>
 
-<script>
-  function post() {
-    var xhr = new XMLHttpRequest();
-    var url = "http://ec2-54-216-109-19.eu-west-1.compute.amazonaws.com:9000/v1/arrival";
-    xhr.open("POST", url, false);
-    xhr.setRequestHeader("Content-Type", "application/json");
-    xhr.onreadystatechange = function () {
+  <br>
+
+  <h2>Get records by stop code</h2>
+
+  <form>
+    <label for="get_by_stop_code">Stop code:</label><br>
+    <input type="text" id="get_by_stop_code" name="stop_code"><br><br>
+    <button onclick="get()">Add</button>
+  </form>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Id</th>
+        <th>Bus Line</th>
+        <th>Stop Code</th>
+        <th>Time</th>
+      </tr>
+    </thead>
+
+    <tbody id="arrivals_by_stop_code">
+
+    </tbody>
+  </table>
+
+  <script>
+    function post() {
+      var xhr = new XMLHttpRequest();
+      var url = "http://ec2-54-216-109-19.eu-west-1.compute.amazonaws.com:9000/v1/arrival";
+      xhr.open("POST", url, false);
+      xhr.setRequestHeader("Content-Type", "application/json");
+      xhr.onreadystatechange = function () {
         if (xhr.readyState === 4 && xhr.status === 200) {
-            var json = JSON.parse(xhr.responseText);
-            console.log(json);
+          var json = JSON.parse(xhr.responseText);
+          console.log(json);
         }
-    };
-    var data = JSON.stringify({
-      "stop_code": document.getElementById("stop_code").value,
-      "bus_line": document.getElementById("bus_line").value,
-      "time": document.getElementById("time").value
-    });
-    xhr.send(data);
-    //console.log(data);
-  }
-  
-</script>
+      };
+      var data = JSON.stringify({
+        "stop_code": document.getElementById("stop_code").value,
+        "bus_line": document.getElementById("bus_line").value,
+        "time": document.getElementById("time").value
+      });
+      xhr.send(data);
+      //console.log(data);
+    }
+
+    function get() {
+      //const url = "http://ec2-54-216-109-19.eu-west-1.compute.amazonaws.com:9000/v1/arrivals/" + document.getElementById("get_by_stop_code").value;
+      const url = "http://localhost:9000/v1/arrivals/SP"
+      fetch(url)
+        .then(response => response.json())
+        .then(data => {
+          console.log(data);
+          table = document.getElementById("arrivals_by_stop_code")
+          for (arrival of data) {
+            table.innerHTML += `
+              <tr>
+                <td>${arrival['id']}</td>
+                <td>${arrival['bus_line']}</td>
+                <td>${arrival['stop_code']}</td>
+                <td>${arrival['time']}</td>
+              </tr>
+          `
+          }
+        });
+    }
+  </script>
 
 </body>
+
 </html>

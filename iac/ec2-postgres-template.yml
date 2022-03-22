@@ -1,0 +1,58 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "Template to create an EC2 instance with PostgreSQL installed"
+
+Parameters:
+  InstanceTypeParameter:
+    Type: String
+    Default: t2.micro
+    AllowedValues:
+      - t2.micro
+      - t2.small
+    Description: "WebServer EC2 instance type. Default is t2.micro"
+  
+  KeyName:
+    Type: AWS::EC2::KeyPair::KeyName
+    Description: "Name of the SSH key pair"
+
+Mappings:
+  Region2AMI:
+    eu-west-1:
+      HVM64: "ami-0069d66985b09d219"
+    eu-west-2:
+      HVM64: "ami-03e88be9ecff64781"
+
+Resources:
+  WebServerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: "Enable HTTP access on port 9000 and SSH access to one ip address"
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 9000
+          ToPort: 9000
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 5.90.181.85/32
+
+  WebServer:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !FindInMap
+        - Region2AMI
+        - !Ref "AWS::Region"
+        - HVM64
+      InstanceType: !Ref "InstanceTypeParameter"
+      KeyName: !Ref "KeyName"
+      SecurityGroups: [ !Ref "WebServerSecurityGroup" ]
+
+Outputs:
+  WebsiteUrl:
+    Description: "WebServer Url"
+    Value: !Join
+      - ""
+      -
+        - "http://"
+        - "Fn::GetAtt": ["WebServer", "PublicDnsName"]
+        - ":9000/version"

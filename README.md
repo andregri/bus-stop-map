@@ -76,3 +76,45 @@ curl -X GET http://localhost:9000/v1/arrivals/SP \-H 'content-type: application/
 cd cmd
 GOOS=linux GOARCH=amd64 go build -o bus-server
 ```
+
+## Deploy stack
+Validate template:
+```
+aws cloudformation validate-template --template-body file://$PWD/iac/ec2-postgres-template.yml
+```
+
+Deploy the stack:
+```
+aws cloudformation deploy \
+  --template-file iac/ec2-postgres-template.yml \
+  --stack-name "mystack" \
+  --parameter-overrides \
+  KeyName=stack-kp \
+  --capabilities CAPABILITY_IAM
+```
+
+Update the stack:
+```
+aws cloudformation update-stack \
+  --stack-name mystack \
+  --template-body file://$PWD/iac/ec2-postgres-template.yml \
+  --parameters \
+  ParameterKey=KeyName,UsePreviousValue=true \
+  --capabilities CAPABILITY_IAM
+```
+
+Delete stack:
+```
+aws cloudformation delete-stack --stack-name mystack
+```
+
+Troubleshoot `cfn-init`
+```
+sudo /opt/aws/bin/cfn-init -v --stack mystack --resource WebServer --region eu-west-1
+cat /var/log/cfn-init-cmd.log
+```
+
+## ToDo
+[ ] Set password to user `postgres` 
+[ ] Alter role in psql?
+[ ] Add `cfn-signal`?

@@ -34,10 +34,29 @@ Resources:
         - IpProtocol: tcp
           FromPort: 22
           ToPort: 22
-          CidrIp: 5.90.181.85/32
+          CidrIp: 0.0.0.0/0
 
   WebServer:
     Type: AWS::EC2::Instance
+    Metadata:
+      Comment1: Install Postgresql
+      AWS::CloudFormation::Init:
+        configSets:
+          default:
+            - InstallPostgresql
+        InstallPostgresql:
+          packages:
+            yum:
+              postgresql-server: []
+          commands:
+            01-initdb:
+              command: !Sub |
+                set -xe
+                postgresql-setup initdb
+                systemctl enable postgresql.service
+                systemctl start postgresql.service
+              cwd: "~"
+              ignoreErrors: "false"
     Properties:
       ImageId: !FindInMap
         - Region2AMI
@@ -46,13 +65,29 @@ Resources:
       InstanceType: !Ref "InstanceTypeParameter"
       KeyName: !Ref "KeyName"
       SecurityGroups: [ !Ref "WebServerSecurityGroup" ]
+      UserData: !Base64 
+          'Fn::Join':
+            - ''
+            - - |
+                #!/bin/bash -xe
+              - |
+                yum install -y aws-cfn-bootstrap
+              - |
+                # Install the files and packages from the metadata
+              - '/opt/aws/bin/cfn-init -v '
+              - '         --stack '
+              - !Ref 'AWS::StackName'
+              - '         --resource WebServer '
+              - '         --configsets default '
+              - '         --region '
+              - !Ref 'AWS::Region'
+              - |+
 
 Outputs:
   WebsiteUrl:
     Description: "WebServer Url"
     Value: !Join
       - ""
-      -
-        - "http://"
+      - - "http://"
         - "Fn::GetAtt": ["WebServer", "PublicDnsName"]
         - ":9000/version"
